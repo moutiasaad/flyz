@@ -1,0 +1,198 @@
+{
+  "mode": "light",
+  "colors": {
+    "accent": "#0080ff",
+    "background": "#ffffff",
+    "text": "#6b7280"
+  },
+  "typography": {
+    "headings": {
+      "h1": {
+        "fontFamily": "Outfit",
+        "fontSize": "36px",
+        "fontWeight": 700,
+        "lineHeight": "40px",
+        "letterSpacing": "0px",
+        "fontFallbacks": [
+          "Outfit",
+          "Outfit Fallback"
+        ]
+      },
+      "h2": {
+        "fontFamily": "ui-sans-serif",
+        "fontSize": "30px",
+        "fontWeight": 700,
+        "lineHeight": "36px",
+        "letterSpacing": "0px",
+        "fontFallbacks": [
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ]
+      },
+      "h3": {
+        "fontFamily": "ui-sans-serif",
+        "fontSize": "25px",
+        "fontWeight": 600,
+        "lineHeight": "30px",
+        "letterSpacing": "0px",
+        "fontFallbacks": [
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ]
+      },
+      "h4": {
+        "fontFamily": "Outfit",
+        "fontSize": "21px",
+        "fontWeight": 600,
+        "lineHeight": "30px",
+        "letterSpacing": "0px",
+        "fontFallbacks": [
+          "Outfit",
+          "Outfit Fallback"
+        ]
+      }
+    },
+    "p": {
+      "fontFamily": "Outfit",
+      "fontSize": "18px",
+      "fontWeight": 400,
+      "lineHeight": "28px",
+      "letterSpacing": "0px",
+      "fontFallbacks": [
+        "Outfit",
+        "Outfit Fallback"
+      ]
+    }
+  },
+  "elementSpacing": {
+    "xs": "6px",
+    "sm": "16px",
+    "md": "24px",
+    "lg": "48px",
+    "xl": "96px"
+  },
+  "shadows": {
+    "sm": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+    "md": "none",
+    "lg": "none",
+    "xl": "none",
+    "inner": "none"
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "backgroundColor": "#0080ff",
+        "color": "#ffffff",
+        "borderColor": "#e5e7eb",
+        "borderRadius": "9999px",
+        "borderWidth": "0px",
+        "borderStyle": "solid",
+        "padding": "8px 12px",
+        "fontSize": "14px",
+        "fontWeight": 600,
+        "minWidth": "144px",
+        "minHeight": "36px",
+        "textDecoration": "none",
+        "boxShadow": "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px",
+        "fontFallbacks": [
+          "Outfit",
+          "Outfit Fallback"
+        ],
+        "fontFamily": "Outfit",
+        "css": "box-sizing: border-box; display: inline-block; min-width: 144px; min-height: 36px; background-color: #0080ff; color: #ffffff; border: 0px solid #e5e7eb; border-radius: 9999px; padding: 8px 12px; font-size: 14px; font-weight: 600; font-family: Outfit, \"Outfit Fallback\"; text-decoration: none; box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;"
+      },
+      "secondary": {
+        "backgroundColor": "transparent",
+        "color": "#374151",
+        "borderColor": "#e5e7eb",
+        "borderRadius": "9999px",
+        "borderWidth": "0px",
+        "borderStyle": "solid",
+        "padding": "8px 12px",
+        "fontSize": "14px",
+        "fontWeight": 600,
+        "minWidth": "144px",
+        "minHeight": "36px",
+        "textDecoration": "none",
+        "boxShadow": "none",
+        "fontFallbacks": [
+          "Outfit",
+          "Outfit Fallback"
+        ],
+        "fontFamily": "Outfit",
+        "css": "box-sizing: border-box; display: inline-block; min-width: 144px; min-height: 36px; background-color: transparent; color: #374151; border: 0px solid #e5e7eb; border-radius: 9999px; padding: 8px 12px; font-size: 14px; font-weight: 600; font-family: Outfit, \"Outfit Fallback\"; text-decoration: none;"
+      },
+      "link": {
+        "borderRadius": "0px",
+        "borderWidth": "0px",
+        "borderStyle": "none",
+        "padding": "0px",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "minWidth": "0px",
+        "minHeight": "0px",
+        "textDecoration": "underline",
+        "boxShadow": "none",
+        "backgroundColor": "transparent",
+        "color": "#6b7280",
+        "borderColor": "transparent",
+        "fontFallbacks": [
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji"
+        ],
+        "fontFamily": "ui-sans-serif",
+        "css": "color: #6b7280; font-size: 14px; font-weight: 400; font-family: ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; text-decoration: underline;"
+      }
+    },
+    "card": {
+      "backgroundColor": "#ffffff",
+      "borderColor": "#e5e7eb",
+      "borderRadius": "8px",
+      "borderWidth": "1px",
+      "borderStyle": "solid",
+      "padding": "16px",
+      "boxShadow": "none",
+      "textColor": "#6b7280",
+      "css": "background-color: #ffffff; color: #6b7280; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px;"
+    }
+  },
+  "fontLinks": {
+    "Outfit": {
+      "type": "google",
+      "files": {
+        "100": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC0C4G-EiAou6Y.ttf",
+        "200": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4bC1C4G-EiAou6Y.ttf",
+        "300": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4W61C4G-EiAou6Y.ttf",
+        "400": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4TC1C4G-EiAou6Y.ttf",
+        "500": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4QK1C4G-EiAou6Y.ttf",
+        "600": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4e6yC4G-EiAou6Y.ttf",
+        "700": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4deyC4G-EiAou6Y.ttf",
+        "800": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4bCyC4G-EiAou6Y.ttf",
+        "900": "https://fonts.gstatic.com/s/outfit/v15/QGYyz_MVcBeNP4NjuGObqx1XmO1I4ZmyC4G-EiAou6Y.ttf"
+      },
+      "category": "sans-serif"
+    },
+    "Noto Color Emoji": {
+      "type": "google",
+      "files": {
+        "400": "https://fonts.gstatic.com/s/notocoloremoji/v39/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFab5s79iz64w.ttf"
+      },
+      "category": "sans-serif"
+    }
+  }
+}

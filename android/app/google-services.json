@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "315447478704",
+    "project_id": "flyz-58f1b",
+    "storage_bucket": "flyz-58f1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315447478704:android:848ba597f2546a3a59ae75",
+        "android_client_info": {
+          "package_name": "com.example.flyz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeCgeEAwGug4UdhVwfowKrFuQAsv59upI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

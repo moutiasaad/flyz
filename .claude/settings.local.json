@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__code-review-graph__get_architecture_overview_tool",
+      "mcp__code-review-graph__semantic_search_nodes_tool",
+      "WebFetch(domain:m.flyz.app)",
+      "Bash(curl -s \"https://m.flyz.app/fr\")",
+      "Bash(flutter pub *)",
+      "Bash(flutter analyze *)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\mouti\\\\OneDrive\\\\Documents\\\\Projects\\\\flyz\\\\flutter\")",
+      "Bash(Select-Object FullName, Length)",
+      "Read(//mnt/c/Users/mouti/OneDrive/Documents/Projects/flyz/**)",
+      "Bash(dart run *)",
+      "Bash(flutter build *)",
+      "Bash(flutter --version)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mouti\\\\AndroidStudioProjects\\\\flyz\\\\assets\\\\images\\\\\" | Select-Object Name, @{n='KB';e={[math]::Round\\($_.Length/1KB,1\\)}})",
+      "Bash(C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat pub *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "code-review-graph"
+  ]
+}

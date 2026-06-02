@@ -1,0 +1,73 @@
+name: flyz
+description: A new Flutter project.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_svg: ^2.0.10
+  webview_flutter: ^4.4.0
+  cupertino_icons: ^1.0.2
+  firebase_core: ^3.0.0
+  firebase_messaging: ^15.0.0
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+  flutter_native_splash: ^2.4.1
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/plane.svg
+    - assets/images/word.svg
+    - assets/images/logo.svg
+    - assets/images/logo-white.png
+    - assets/images/onb_1.png
+    - assets/images/onb_2.png
+    - assets/images/onb_3.png
+
+  fonts:
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit-300.ttf
+          weight: 300
+        - asset: assets/fonts/Outfit-400.ttf
+          weight: 400
+        - asset: assets/fonts/Outfit-500.ttf
+          weight: 500
+        - asset: assets/fonts/Outfit-600.ttf
+          weight: 600
+        - asset: assets/fonts/Outfit-700.ttf
+          weight: 700
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/icon.png"
+  adaptive_icon_background: "#1346CC"
+  adaptive_icon_foreground: "assets/images/icon.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#1346CC"
+  image: assets/images/logo-white.png
+  android_12:
+    color: "#1346CC"
+    image: assets/images/splash_android12.png
+    icon_background_color: "#1346CC"
+  fullscreen: true
+  android: true
+  ios: true
