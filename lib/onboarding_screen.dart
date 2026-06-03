@@ -1,63 +1,61 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Flyz onboarding — 3 screens, deep Mediterranean blue, French copy.
-/// Discover → Compare flights → Book, ending on Sign up / Log in.
+/// Flyz onboarding — dark navy, transparent 787 hero, French copy.
+/// Plane + point-field background stay fixed; only the copy block pages horizontally.
 class FlyzOnboarding extends StatefulWidget {
   const FlyzOnboarding({
     super.key,
-    required this.onSignUp,
+    required this.onGetStarted,
     required this.onLogIn,
-    required this.onSkip,
   });
 
-  final VoidCallback onSignUp;
+  final VoidCallback onGetStarted;
   final VoidCallback onLogIn;
-  final VoidCallback onSkip;
 
   @override
   State<FlyzOnboarding> createState() => _FlyzOnboardingState();
 }
 
 class _FlyzOnboardingState extends State<FlyzOnboarding> {
-  static const Color _blue = Color(0xFF1346CC);
-  static const Color _blueDeep = Color(0xFF0E37A8);
-  static const Color _blueGlow = Color(0xFF2E6BF0);
-  static const Color _cyan = Color(0xFF3DA8FF);
-  static const Color _navy = Color(0xFF08245E);
+  static const Color flyzBlue = Color(0xFF1346CC);
+  static const Color flyzCyan = Color(0xFF3DA8FF);
+  static const Color bg0 = Color(0xFF0D1936);
+  static const Color bg1 = Color(0xFF070D1F);
+  static const Color bg2 = Color(0xFF04060E);
 
   static const _pages = <_OnbPage>[
     _OnbPage(
-      headline: 'Explorez la Méditerranée',
-      sub: 'Mer, désert et culture : découvrez l’Algérie et ses plus belles destinations.',
-      image: 'assets/images/onb_1.png',
-      caption: 'Photo · destination méditerranéenne',
+      head: 'Le monde des vols au bout des doigts',
+      accent: 'vols',
+      sub: 'Vos projets de voyage simplifiés. Commencez votre réservation dès maintenant.',
     ),
     _OnbPage(
-      headline: 'Comparez tous les vols',
-      sub: 'Le meilleur prix en quelques secondes — vols directs ou avec escale.',
-      image: 'assets/images/onb_2.png',
-      caption: 'Photo · recherche de vols',
+      head: 'Envolez-vous vers la Méditerranée',
+      accent: 'Méditerranée',
+      sub: 'Mer, désert et culture — trouvez votre prochain vol en quelques secondes.',
     ),
     _OnbPage(
-      headline: 'Réservez en un instant',
-      sub: 'Paiement sécurisé et tous vos voyages au même endroit.',
-      image: 'assets/images/onb_3.png',
-      caption: 'Photo · carte d’embarquement',
+      head: 'Voyagez plus loin avec flyz',
+      accent: 'flyz',
+      sub: 'Tous vos voyages réunis dans une seule application, du départ à l’arrivée.',
     ),
   ];
 
   final _controller = PageController();
   int _index = 0;
-
   bool get _isLast => _index == _pages.length - 1;
 
-  void _go(int i) {
-    _controller.animateToPage(
-      i.clamp(0, _pages.length - 1),
-      duration: const Duration(milliseconds: 480),
-      curve: Curves.easeInOutCubic,
-    );
+  void _next() {
+    if (_isLast) {
+      widget.onGetStarted();
+    } else {
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeInOutCubic,
+      );
+    }
   }
 
   @override
@@ -69,322 +67,234 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _blue,
-      body: Container(
+      backgroundColor: bg1,
+      body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: RadialGradient(
-            center: Alignment(0, -0.84),
-            radius: 1.3,
-            colors: [_blueGlow, _blue, _blueDeep],
-            stops: [0.0, 0.46, 1.0],
+            center: Alignment(0, 0.76),
+            radius: 1.25,
+            colors: [bg0, bg1, bg2],
+            stops: [0.0, 0.56, 1.0],
           ),
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Top bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 14, 24, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SvgPicture.asset('assets/images/logo.svg', height: 22),
-                    AnimatedOpacity(
-                      opacity: _isLast ? 0 : 1,
-                      duration: const Duration(milliseconds: 200),
-                      child: TextButton(
-                        onPressed: _isLast ? null : widget.onSkip,
-                        child: const Text(
-                          'Passer',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            fontFamily: 'Outfit',
+        child: Stack(
+          children: [
+            // subtle point-field + dashed flight-path arcs
+            const Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(painter: _BgDecoPainter()),
+              ),
+            ),
+
+            // 787 hero — climbing up-and-right over the point field
+            Positioned(
+              top: 96,
+              left: -8,
+              right: -40,
+              child: IgnorePointer(
+                child: Image.asset(
+                  'assets/images/plane_787.png',
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+
+            // top scrim keeps logo crisp over the plane
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 150,
+              child: IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        const Color(0xFF060B1A).withValues(alpha: 0.66),
+                        const Color(0xFF060B1A).withValues(alpha: 0.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // content column
+            SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6, bottom: 2),
+                    child: SvgPicture.asset('assets/images/logo.svg', height: 21),
+                  ),
+
+                  const Spacer(),
+
+                  // paged copy block (lower half; plane occupies the top)
+                  SizedBox(
+                    height: 196,
+                    child: PageView.builder(
+                      controller: _controller,
+                      itemCount: _pages.length,
+                      onPageChanged: (i) => setState(() => _index = i),
+                      itemBuilder: (_, i) => _CopyBlock(page: _pages[i]),
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // page dots
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(width: 28),
+                      ...List.generate(_pages.length, (i) {
+                        final on = i == _index;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          margin: const EdgeInsets.only(right: 6),
+                          width: on ? 22 : 7,
+                          height: 7,
+                          decoration: BoxDecoration(
+                            color: on
+                                ? flyzCyan
+                                : Colors.white.withValues(alpha: 0.28),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+
+                  const SizedBox(height: 22),
+
+                  // CTA + login link
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 26),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 54,
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _next,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: flyzBlue,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shadowColor: flyzBlue.withValues(alpha: 0.6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Commencer',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.2,
+                                    fontFamily: 'Outfit',
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(Icons.arrow_forward_rounded, size: 18),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 15),
+                        GestureDetector(
+                          onTap: widget.onLogIn,
+                          child: Text.rich(
+                            TextSpan(
+                              text: 'Vous avez déjà un compte ? ',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Outfit',
+                              ),
+                              children: const [
+                                TextSpan(
+                                  text: 'Connexion',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'Outfit',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-
-              // Slides
-              Expanded(
-                child: PageView.builder(
-                  controller: _controller,
-                  itemCount: _pages.length,
-                  onPageChanged: (i) => setState(() => _index = i),
-                  itemBuilder: (_, i) => _SlideView(page: _pages[i]),
-                ),
-              ),
-
-              // Footer
-              Padding(
-                padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
-                child: _isLast ? _ctas() : _nav(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _nav() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_pages.length, (i) {
-            final on = i == _index;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 320),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: on ? 24 : 7,
-              height: 7,
-              decoration: BoxDecoration(
-                color: on ? _cyan : Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(99),
-                boxShadow: on
-                    ? [const BoxShadow(color: Color(0x993DA8FF), blurRadius: 12)]
-                    : null,
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text.rich(
-              TextSpan(children: [
-                TextSpan(
-                  text: '0${_index + 1}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Outfit',
                   ),
-                ),
-                TextSpan(
-                  text: '  —  0${_pages.length}',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Outfit',
-                  ),
-                ),
-              ]),
-              style: const TextStyle(fontSize: 14, letterSpacing: 1),
-            ),
-            GestureDetector(
-              onTap: () => _go(_index + 1),
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: const BoxDecoration(
-                  color: _cyan,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xCC3DA8FF),
-                      blurRadius: 22,
-                      offset: Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.arrow_forward_rounded, color: _navy, size: 26),
+                ],
               ),
             ),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _ctas() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Skip — subtle, sits above the main CTAs
-        SizedBox(
-          height: 56,
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: widget.onSkip,
-            icon: Icon(
-              Icons.arrow_forward_rounded,
-              size: 18,
-              color: Colors.white.withValues(alpha: 0.55),
-            ),
-            label: Text(
-              'Continuer sans compte',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.55),
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Outfit',
-              ),
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white.withValues(alpha: 0.55),
-              side: BorderSide(
-                color: Colors.white.withValues(alpha: 0.22),
-                width: 1.5,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 56,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: widget.onSignUp,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _cyan,
-              foregroundColor: _navy,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Outfit',
-              ),
-            ),
-            child: const Text('S’inscrire'),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 56,
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: widget.onLogIn,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
-              side: BorderSide(
-                color: Colors.white.withValues(alpha: 0.45),
-                width: 1.5,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Outfit',
-              ),
-            ),
-            child: const Text('Se connecter'),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
 class _OnbPage {
-  const _OnbPage({
-    required this.headline,
-    required this.sub,
-    required this.image,
-    required this.caption,
-  });
-  final String headline, sub, image, caption;
+  const _OnbPage({required this.head, required this.accent, required this.sub});
+  final String head, accent, sub;
 }
 
-class _SlideView extends StatelessWidget {
-  const _SlideView({required this.page});
+/// Left-aligned headline (with cyan accent word) + subtitle.
+class _CopyBlock extends StatelessWidget {
+  const _CopyBlock({required this.page});
   final _OnbPage page;
 
   @override
   Widget build(BuildContext context) {
+    final parts = page.head.split(page.accent);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 8, 28, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.07),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.16),
-                    width: 1.5,
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0xB3040F3C),
-                      blurRadius: 44,
-                      offset: Offset(0, 18),
-                    ),
-                  ],
-                ),
-                child: Image.asset(
-                  page.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _placeholder(page.caption),
-                ),
+          Text.rich(
+            TextSpan(
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 27,
+                height: 1.12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.3,
+                fontFamily: 'Outfit',
               ),
+              children: [
+                TextSpan(text: parts.first),
+                TextSpan(
+                  text: page.accent,
+                  style: const TextStyle(color: _FlyzOnboardingState.flyzCyan),
+                ),
+                if (parts.length > 1)
+                  TextSpan(text: parts.sublist(1).join(page.accent)),
+              ],
             ),
           ),
-          const SizedBox(height: 30),
-          Text(
-            page.headline,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 27,
-              height: 1.18,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.4,
-              fontFamily: 'Outfit',
-            ),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            page.sub,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.74),
-              fontSize: 15,
-              height: 1.55,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'Outfit',
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _placeholder(String caption) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.image_outlined,
-              color: Colors.white.withValues(alpha: 0.5), size: 34),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+          const SizedBox(height: 13),
+          SizedBox(
+            width: 250,
             child: Text(
-              caption,
-              textAlign: TextAlign.center,
+              page.sub,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.6),
-                fontSize: 13,
+                color: Colors.white.withValues(alpha: 0.66),
+                fontSize: 13.5,
+                height: 1.55,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Outfit',
               ),
@@ -394,4 +304,86 @@ class _SlideView extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Subtle point-field + dashed flight-path arcs with location pins.
+class _BgDecoPainter extends CustomPainter {
+  const _BgDecoPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width, h = size.height;
+
+    // point field (14px grid), faded toward edges/bottom
+    const spacing = 14.0;
+    final center = Offset(w * 0.5, h * 0.32);
+    final maxD = math.sqrt(w * w + h * h) * 0.62;
+    final dot = Paint()..color = const Color(0xFFCFE0FF);
+    for (double y = 8; y < h; y += spacing) {
+      for (double x = 8; x < w; x += spacing) {
+        final d = (Offset(x, y) - center).distance;
+        var a = (1 - (d / maxD)).clamp(0.0, 1.0);
+        a *= (1 - (y / h) * 0.5).clamp(0.0, 1.0);
+        if (a <= 0.02) continue;
+        dot.color = const Color(0xFFCFE0FF).withValues(alpha: 0.13 * a);
+        canvas.drawCircle(Offset(x, y), 1.0, dot);
+      }
+    }
+
+    // dashed flight-path arcs (scaled to 300×650 design space)
+    final sx = w / 300, sy = h / 650;
+    Offset p(double px, double py) => Offset(px * sx, py * sy);
+
+    void dashedPath(Path path, Color color) {
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.4
+        ..strokeCap = StrokeCap.round
+        ..color = color;
+      for (final metric in path.computeMetrics()) {
+        double dist = 0;
+        while (dist < metric.length) {
+          final seg = metric.extractPath(dist, dist + 2);
+          canvas.drawPath(seg, paint);
+          dist += 8; // 2px on / 6px off
+        }
+      }
+    }
+
+    final arc1 = Path()
+      ..moveTo(p(14, 250).dx, p(14, 250).dy)
+      ..cubicTo(p(96, 196).dx, p(96, 196).dy, p(214, 214).dx, p(214, 214).dy,
+          p(290, 158).dx, p(290, 158).dy);
+    final arc2 = Path()
+      ..moveTo(p(22, 556).dx, p(22, 556).dy)
+      ..cubicTo(p(118, 486).dx, p(118, 486).dy, p(206, 540).dx, p(206, 540).dy,
+          p(292, 470).dx, p(292, 470).dy);
+    dashedPath(arc1, _cyanA(0.18));
+    dashedPath(arc2, _cyanA(0.13));
+
+    // location pins (ring + dot)
+    const pins = [
+      Offset(14, 250),
+      Offset(290, 158),
+      Offset(22, 556),
+      Offset(292, 470),
+      Offset(150, 205),
+    ];
+    final ring = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = _cyanA(0.32);
+    final core = Paint()
+      ..color = const Color(0xFF7DC4FF).withValues(alpha: 0.55);
+    for (final pin in pins) {
+      canvas.drawCircle(p(pin.dx, pin.dy), 4.4, ring);
+      canvas.drawCircle(p(pin.dx, pin.dy), 1.7, core);
+    }
+  }
+
+  static Color _cyanA(double a) =>
+      const Color(0xFF3DA8FF).withValues(alpha: a);
+
+  @override
+  bool shouldRepaint(_BgDecoPainter oldDelegate) => false;
 }

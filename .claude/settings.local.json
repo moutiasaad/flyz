@@ -14,7 +14,8 @@
       "Bash(flutter build *)",
       "Bash(flutter --version)",
       "PowerShell(Get-ChildItem \"C:\\\\Users\\\\mouti\\\\AndroidStudioProjects\\\\flyz\\\\assets\\\\images\\\\\" | Select-Object Name, @{n='KB';e={[math]::Round\\($_.Length/1KB,1\\)}})",
-      "Bash(C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat pub *)"
+      "Bash(C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat pub *)",
+      "Bash(Copy-Item *)"
     ]
   },
   "enableAllProjectMcpServers": true,

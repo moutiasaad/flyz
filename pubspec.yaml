@@ -34,9 +34,8 @@ flutter:
     - assets/images/word.svg
     - assets/images/logo.svg
     - assets/images/logo-white.png
-    - assets/images/onb_1.png
-    - assets/images/onb_2.png
-    - assets/images/onb_3.png
+    - assets/images/plane_787.png
+
 
   fonts:
     - family: Outfit

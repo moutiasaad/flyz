@@ -106,9 +106,8 @@ class _RootState extends State<_Root> {
 
         if (_screen == _Screen.onboarding)
           FlyzOnboarding(
-            onSignUp: () => _advance(_Screen.signUp),
+            onGetStarted: () => _advance(_Screen.home),
             onLogIn: () => _advance(_Screen.signIn),
-            onSkip: () => _advance(_Screen.home),
           ),
       ],
     );
