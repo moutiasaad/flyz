@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'firebase_options.dart';
 import 'services/fcm_service.dart';
 import 'theme/app_theme.dart';
 import 'splash_screen.dart';
 import 'onboarding_screen.dart';
 import 'web_screen.dart';
+import 'no_internet_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,51 +55,71 @@ enum _Screen { splash, onboarding, signIn, signUp, home }
 
 class _RootState extends State<_Root> {
   _Screen _screen = _Screen.splash;
+  bool _preWarm = true; // start immediately so WebViews load during splash
+  bool _isOnline = true;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
 
-  // Flips to true when splash ends — starts pre-warming all three WebViews
-  // in the background while user reads the onboarding slides.
-  bool _preWarm = false;
+  @override
+  void initState() {
+    super.initState();
+    _checkConnectivity();
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+      final online = results.any((r) => r != ConnectivityResult.none);
+      if (mounted && online != _isOnline) setState(() => _isOnline = online);
+    });
+  }
 
-  void _advance(_Screen next) => setState(() {
-        if (next != _Screen.splash) _preWarm = true;
-        _screen = next;
-      });
+  @override
+  void dispose() {
+    _connectivitySub?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _checkConnectivity() async {
+    final results = await Connectivity().checkConnectivity();
+    final online = results.any((r) => r != ConnectivityResult.none);
+    if (mounted && !online) setState(() => _isOnline = false);
+  }
+
+  void _advance(_Screen next) => setState(() => _screen = next);
+
+  // IndexedStack keeps all WebViews at full screen dimensions so Android's
+  // native WebView can actually load content during pre-warming.
+  int get _webViewIndex => switch (_screen) {
+        _Screen.signIn => 1,
+        _Screen.signUp => 2,
+        _ => 0,
+      };
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         // ── Pre-warmed WebViews ──────────────────────────────────────────
-        // Kept alive with Offstage from the moment splash ends.
-        // They load in the background while the user goes through onboarding,
-        // so by the time a button is tapped the page is already ready.
-        if (_preWarm) ...[
-          Offstage(
-            offstage: _screen != _Screen.home,
-            child: FlyzWebScreen(
-              key: const ValueKey('home'),
-              initialUrl: 'https://m.flyz.app',
-              detectAuth: false,
-              onDone: () {},
-            ),
+        if (_preWarm)
+          IndexedStack(
+            index: _webViewIndex,
+            children: [
+              FlyzWebScreen(
+                key: const ValueKey('home'),
+                initialUrl: 'https://m.flyz.app',
+                detectAuth: false,
+                onDone: () {},
+              ),
+              FlyzWebScreen(
+                key: const ValueKey('signIn'),
+                initialUrl: 'https://m.flyz.app/fr/signin',
+                showLoadingCover: false,
+                onDone: () => _advance(_Screen.home),
+              ),
+              FlyzWebScreen(
+                key: const ValueKey('signUp'),
+                initialUrl: 'https://m.flyz.app/fr/signup',
+                showLoadingCover: false,
+                onDone: () => _advance(_Screen.home),
+              ),
+            ],
           ),
-          Offstage(
-            offstage: _screen != _Screen.signIn,
-            child: FlyzWebScreen(
-              key: const ValueKey('signIn'),
-              initialUrl: 'https://m.flyz.app/fr/signin',
-              onDone: () => _advance(_Screen.home),
-            ),
-          ),
-          Offstage(
-            offstage: _screen != _Screen.signUp,
-            child: FlyzWebScreen(
-              key: const ValueKey('signUp'),
-              initialUrl: 'https://m.flyz.app/fr/signup',
-              onDone: () => _advance(_Screen.home),
-            ),
-          ),
-        ],
 
         // ── Foreground screens ───────────────────────────────────────────
         if (_screen == _Screen.splash)
@@ -108,6 +131,13 @@ class _RootState extends State<_Root> {
           FlyzOnboarding(
             onGetStarted: () => _advance(_Screen.home),
             onLogIn: () => _advance(_Screen.signIn),
+          ),
+
+        // ── No internet overlay ──────────────────────────────────────────
+        // Shown on all screens except splash (splash has no network dependency).
+        if (!_isOnline && _screen != _Screen.splash)
+          NoInternetScreen(
+            onRetry: _checkConnectivity,
           ),
       ],
     );

@@ -86,11 +86,11 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
               ),
             ),
 
-            // 787 hero — climbing up-and-right over the point field
+            // 787 hero — shifted left so nose/top is visible
             Positioned(
-              top: 96,
-              left: -8,
-              right: -40,
+              top: 200,
+              left: 0,
+              right: -80,
               child: IgnorePointer(
                 child: Image.asset(
                   'assets/images/plane_787.png',
@@ -127,8 +127,8 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 6, bottom: 2),
-                    child: SvgPicture.asset('assets/images/logo.svg', height: 21),
+                    padding: const EdgeInsets.only(top: 32, bottom: 2),
+                    child: SvgPicture.asset('assets/images/logo.svg', height: 28),
                   ),
 
                   const Spacer(),
