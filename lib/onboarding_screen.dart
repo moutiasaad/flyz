@@ -18,7 +18,8 @@ class FlyzOnboarding extends StatefulWidget {
   State<FlyzOnboarding> createState() => _FlyzOnboardingState();
 }
 
-class _FlyzOnboardingState extends State<FlyzOnboarding> {
+class _FlyzOnboardingState extends State<FlyzOnboarding>
+    with TickerProviderStateMixin {
   static const Color flyzBlue = Color(0xFF1346CC);
   static const Color flyzCyan = Color(0xFF3DA8FF);
   static const Color bg0 = Color(0xFF0D1936);
@@ -29,23 +30,110 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
     _OnbPage(
       head: 'Le monde des vols au bout des doigts',
       accent: 'vols',
-      sub: 'Vos projets de voyage simplifiés. Commencez votre réservation dès maintenant.',
+      sub:
+          'Vos projets de voyage simplifiés. Commencez votre réservation dès maintenant.',
     ),
     _OnbPage(
       head: 'Envolez-vous vers la Méditerranée',
       accent: 'Méditerranée',
-      sub: 'Mer, désert et culture — trouvez votre prochain vol en quelques secondes.',
+      sub:
+          'Mer, désert et culture — trouvez votre prochain vol en quelques secondes.',
     ),
     _OnbPage(
       head: 'Voyagez plus loin avec flyz',
       accent: 'flyz',
-      sub: 'Tous vos voyages réunis dans une seule application, du départ à l’arrivée.',
+      sub:
+          'Tous vos voyages réunis dans une seule application, du départ à l’arrivée.',
     ),
   ];
 
   final _controller = PageController();
   int _index = 0;
   bool get _isLast => _index == _pages.length - 1;
+
+  late AnimationController _logoController;
+  late AnimationController _planeController;
+  late AnimationController _bgController;
+  late AnimationController _contentController;
+
+  late Animation<double> _logoOpacity;
+  late Animation<Offset> _logoSlide;
+  late Animation<double> _planeOpacity;
+  late Animation<Offset> _planeSlide;
+  late Animation<double> _bgOpacity;
+  late Animation<double> _contentOpacity;
+  late Animation<Offset> _contentSlide;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Logo animation (0-600ms)
+    _logoController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOut),
+    );
+    _logoSlide = Tween<Offset>(
+      begin: const Offset(0, -0.5),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOutCubic),
+    );
+
+    // Background animation (200-900ms)
+    _bgController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+    _bgOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _bgController, curve: Curves.easeIn),
+    );
+
+    // Plane animation (400-1100ms)
+    _planeController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+    _planeOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _planeController, curve: Curves.easeOut),
+    );
+    _planeSlide = Tween<Offset>(
+      begin: const Offset(0.3, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _planeController, curve: Curves.easeOutCubic),
+    );
+
+    // Content animation (600-1300ms)
+    _contentController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+    _contentOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _contentController, curve: Curves.easeOut),
+    );
+    _contentSlide = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _contentController, curve: Curves.easeOutCubic),
+    );
+
+    // Start animations in sequence
+    _logoController.forward();
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) _bgController.forward();
+    });
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _planeController.forward();
+    });
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) _contentController.forward();
+    });
+  }
 
   void _next() {
     if (_isLast) {
@@ -61,6 +149,10 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
   @override
   void dispose() {
     _controller.dispose();
+    _logoController.dispose();
+    _planeController.dispose();
+    _bgController.dispose();
+    _contentController.dispose();
     super.dispose();
   }
 
@@ -80,9 +172,12 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
         child: Stack(
           children: [
             // subtle point-field + dashed flight-path arcs
-            const Positioned.fill(
+            Positioned.fill(
               child: IgnorePointer(
-                child: CustomPaint(painter: _BgDecoPainter()),
+                child: FadeTransition(
+                  opacity: _bgOpacity,
+                  child: const CustomPaint(painter: _BgDecoPainter()),
+                ),
               ),
             ),
 
@@ -92,10 +187,16 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
               left: 0,
               right: -80,
               child: IgnorePointer(
-                child: Image.asset(
-                  'assets/images/plane_787.png',
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                child: SlideTransition(
+                  position: _planeSlide,
+                  child: FadeTransition(
+                    opacity: _planeOpacity,
+                    child: Image.asset(
+                      'assets/images/plane_787.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -126,114 +227,134 @@ class _FlyzOnboardingState extends State<FlyzOnboarding> {
             SafeArea(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 32, bottom: 2),
-                    child: SvgPicture.asset('assets/images/logo.svg', height: 28),
-                  ),
-
-                  const Spacer(),
-
-                  // paged copy block (lower half; plane occupies the top)
-                  SizedBox(
-                    height: 196,
-                    child: PageView.builder(
-                      controller: _controller,
-                      itemCount: _pages.length,
-                      onPageChanged: (i) => setState(() => _index = i),
-                      itemBuilder: (_, i) => _CopyBlock(page: _pages[i]),
+                  SlideTransition(
+                    position: _logoSlide,
+                    child: FadeTransition(
+                      opacity: _logoOpacity,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 32, bottom: 2),
+                        child: SvgPicture.asset('assets/images/logo.svg',
+                            height: 28),
+                      ),
                     ),
                   ),
-
-                  const SizedBox(height: 18),
-
-                  // page dots
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(width: 28),
-                      ...List.generate(_pages.length, (i) {
-                        final on = i == _index;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.only(right: 6),
-                          width: on ? 22 : 7,
-                          height: 7,
-                          decoration: BoxDecoration(
-                            color: on
-                                ? flyzCyan
-                                : Colors.white.withValues(alpha: 0.28),
-                            borderRadius: BorderRadius.circular(99),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  // CTA + login link
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(22, 0, 22, 26),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 54,
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _next,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: flyzBlue,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shadowColor: flyzBlue.withValues(alpha: 0.6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
+                  const Spacer(),
+                  SlideTransition(
+                    position: _contentSlide,
+                    child: FadeTransition(
+                      opacity: _contentOpacity,
+                      child: Column(
+                        children: [
+                          // paged copy block (lower half; plane occupies the top)
+                          SizedBox(
+                            height: 196,
+                            child: PageView.builder(
+                              controller: _controller,
+                              itemCount: _pages.length,
+                              onPageChanged: (i) => setState(() => _index = i),
+                              itemBuilder: (_, i) =>
+                                  _CopyBlock(page: _pages[i]),
                             ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+
+                          const SizedBox(height: 18),
+
+                          // page dots
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(width: 28),
+                              ...List.generate(_pages.length, (i) {
+                                final on = i == _index;
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  margin: const EdgeInsets.only(right: 6),
+                                  width: on ? 22 : 7,
+                                  height: 7,
+                                  decoration: BoxDecoration(
+                                    color: on
+                                        ? flyzCyan
+                                        : Colors.white.withValues(alpha: 0.28),
+                                    borderRadius: BorderRadius.circular(99),
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+
+                          const SizedBox(height: 22),
+
+                          // CTA + login link
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(22, 0, 22, 26),
+                            child: Column(
                               children: [
-                                Text(
-                                  'Commencer',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.2,
-                                    fontFamily: 'Outfit',
+                                SizedBox(
+                                  height: 54,
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: _next,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: flyzBlue,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shadowColor:
+                                          flyzBlue.withValues(alpha: 0.6),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Commencer',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.2,
+                                            fontFamily: 'Outfit',
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Icon(Icons.arrow_forward_rounded,
+                                            size: 18),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                SizedBox(width: 8),
-                                Icon(Icons.arrow_forward_rounded, size: 18),
+                                const SizedBox(height: 15),
+                                GestureDetector(
+                                  onTap: widget.onLogIn,
+                                  child: Text.rich(
+                                    TextSpan(
+                                      text: 'Vous avez déjà un compte ? ',
+                                      style: TextStyle(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.6),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'Outfit',
+                                      ),
+                                      children: const [
+                                        TextSpan(
+                                          text: 'Connexion',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontFamily: 'Outfit',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 15),
-                        GestureDetector(
-                          onTap: widget.onLogIn,
-                          child: Text.rich(
-                            TextSpan(
-                              text: 'Vous avez déjà un compte ? ',
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.6),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'Outfit',
-                              ),
-                              children: const [
-                                TextSpan(
-                                  text: 'Connexion',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: 'Outfit',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -381,8 +502,7 @@ class _BgDecoPainter extends CustomPainter {
     }
   }
 
-  static Color _cyanA(double a) =>
-      const Color(0xFF3DA8FF).withValues(alpha: a);
+  static Color _cyanA(double a) => const Color(0xFF3DA8FF).withValues(alpha: a);
 
   @override
   bool shouldRepaint(_BgDecoPainter oldDelegate) => false;

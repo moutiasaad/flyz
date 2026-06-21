@@ -36,8 +36,12 @@ class FlyzApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flyz',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: AppTheme.light.copyWith(
+        scaffoldBackgroundColor: const Color(0xFF1346CC),
+      ),
+      darkTheme: AppTheme.dark.copyWith(
+        scaffoldBackgroundColor: const Color(0xFF1346CC),
+      ),
       themeMode: ThemeMode.system,
       home: const _Root(),
     );
@@ -93,10 +97,12 @@ class _RootState extends State<_Root> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // ── Pre-warmed WebViews ──────────────────────────────────────────
-        if (_preWarm)
+    return Container(
+      color: const Color(0xFF1346CC), // Match splash screen blue
+      child: Stack(
+        children: [
+          // ── Pre-warmed WebViews ──────────────────────────────────────────
+          if (_preWarm)
           IndexedStack(
             index: _webViewIndex,
             children: [
@@ -139,7 +145,8 @@ class _RootState extends State<_Root> {
           NoInternetScreen(
             onRetry: _checkConnectivity,
           ),
-      ],
+        ],
+      ),
     );
   }
 }

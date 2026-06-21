@@ -12,6 +12,10 @@ class DefaultFirebaseOptions {
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
+      case TargetPlatform.iOS:
+        return ios;
+      case TargetPlatform.macOS:
+        return macos;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions not configured for this platform.',
@@ -25,5 +29,23 @@ class DefaultFirebaseOptions {
     messagingSenderId: '315447478704',
     projectId: 'flyz-58f1b',
     storageBucket: 'flyz-58f1b.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBeCgeEAwGug4UdhVwfowKrFuQAsv59upI',
+    appId: '1:315447478704:ios:848ba597f2546a3a59ae75',
+    messagingSenderId: '315447478704',
+    projectId: 'flyz-58f1b',
+    storageBucket: 'flyz-58f1b.firebasestorage.app',
+    iosBundleId: 'com.example.flyz',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBeCgeEAwGug4UdhVwfowKrFuQAsv59upI',
+    appId: '1:315447478704:ios:848ba597f2546a3a59ae75',
+    messagingSenderId: '315447478704',
+    projectId: 'flyz-58f1b',
+    storageBucket: 'flyz-58f1b.firebasestorage.app',
+    iosBundleId: 'com.example.flyz',
   );
 }
