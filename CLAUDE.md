@@ -41,8 +41,8 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 
 ### App identity
 - Android package / namespace: `com.flyz`
-- iOS bundle ID: `com.flyz`
-- Firebase iOS bundle ID in `lib/firebase_options.dart`: `com.flyz`
+- iOS bundle ID: `com.example.flyz`
+- Firebase iOS bundle ID in `lib/firebase_options.dart`: `com.example.flyz`
 
 ### Android signing
 - Release keystore file: `android/upload-keystore.jks`
