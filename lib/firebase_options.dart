@@ -37,7 +37,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '315447478704',
     projectId: 'flyz-58f1b',
     storageBucket: 'flyz-58f1b.firebasestorage.app',
-    iosBundleId: 'com.example.flyz',
+    iosBundleId: 'com.flyz',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -46,6 +46,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '315447478704',
     projectId: 'flyz-58f1b',
     storageBucket: 'flyz-58f1b.firebasestorage.app',
-    iosBundleId: 'com.example.flyz',
+    iosBundleId: 'com.flyz',
   );
 }

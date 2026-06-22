@@ -20,6 +20,9 @@ const _kLockdownJs = r"""
   document.addEventListener('contextmenu', function(e) {
     e.preventDefault(); e.stopPropagation(); return false;
   }, true);
+  document.addEventListener('dblclick', function(e) {
+    e.preventDefault(); e.stopPropagation(); return false;
+  }, true);
   document.addEventListener('touchstart', function(e) {
     if (e.touches.length > 1) { e.preventDefault(); }
   }, { passive: false, capture: true });
@@ -112,6 +115,7 @@ class _FlyzWebScreenState extends State<FlyzWebScreen> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..enableZoom(false)
       ..setBackgroundColor(Colors.white)
       ..addJavaScriptChannel(
         'FlyzBridge',

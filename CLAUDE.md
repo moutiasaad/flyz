@@ -36,3 +36,43 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 2. Use `detect_changes` for code review.
 3. Use `get_affected_flows` to understand impact.
 4. Use `query_graph` pattern="tests_for" to check coverage.
+
+## Flyz Google Play Deployment Notes
+
+### App identity
+- Android package / namespace: `com.flyz`
+- iOS bundle ID: `com.flyz`
+- Firebase iOS bundle ID in `lib/firebase_options.dart`: `com.flyz`
+
+### Android signing
+- Release keystore file: `android/upload-keystore.jks`
+- Release properties file: `android/key.properties`
+- Build file wired to read `android/key.properties` for release signing
+- Do not commit `android/key.properties` or the keystore
+
+### Play Console questionnaire answers
+- App access / login required: `Yes`
+- Reviewer account access: provide test credentials and any OTP / 2FA steps if applicable
+- Ads: `No`
+- Uploaded content with violence / sexual / offensive / drug content: `No`
+- User-generated content sharing: `No`
+- Online content: `Yes`
+- Age target: `18+`
+- Data collection: `Yes`
+- Encrypted in transit: `Yes`
+- Account creation methods: `Username and password`
+- Data deletion request without account deletion: `No`
+- Location data: none selected
+- Device or other IDs: `Collected`
+- Data usage reasons for device ID / FCM token:
+  - App functionality
+  - Developer communications
+- Financial features: `No`
+- Advertising ID: `No`
+
+### Store listing notes
+- Short description used: `Flyz aide a chercher des vols, gerer vos reservations et acceder au support.`
+- Full description draft is available in the chat history.
+
+### Reviewer access reminder
+- The Play Console login credentials belong in the `Informations de connexion` / `Acces a l'application` section, not in the data safety or store listing pages.
