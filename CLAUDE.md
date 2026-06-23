@@ -73,6 +73,37 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 ### Store listing notes
 - Short description used: `Flyz aide a chercher des vols, gerer vos reservations et acceder au support.`
 - Full description draft is available in the chat history.
+- Support URL: `https://m.flyz.app/fr/help`
+- Copyright: `© Copyright 2026 Flyz - Tous droits réservés`
 
 ### Reviewer access reminder
 - The Play Console login credentials belong in the `Informations de connexion` / `Acces a l'application` section, not in the data safety or store listing pages.
+
+## App Store Connect Notes
+
+### Submission blockers to clear
+- Set up `Content Rights Information` in `App Information`
+- Choose a build
+- Select a primary category
+- Complete `App Privacy` information
+- Choose a price tier in `Pricing`
+
+### Suggested category
+- Primary category: `Travel`
+
+### App review notes
+- Login required
+- Test account provided
+- OTP / 2FA may be required
+- Flight search
+- Reservations
+- Booking management
+- Support access
+- Online content
+- No ads
+- No user-generated content
+- No in-app purchase required for review, if true
+
+### App Store keyword sets
+- General U.S. flight app keywords: `flight,flights,airfare,airline,airport,tracker,boarding,itinerary,booking,reservations`
+- Search-focused version: `flight,flights,airfare,airline,airport,checkin,tracker,boardingpass,itinerary,reservation`

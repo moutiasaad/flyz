@@ -4,25 +4,58 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 const _kLockdownJs = r"""
 (function() {
-  var meta = document.querySelector('meta[name="viewport"]');
-  if (meta) {
-    meta.setAttribute('content',
-      'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-  } else {
-    var m = document.createElement('meta');
-    m.name = 'viewport';
-    m.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-    document.head.appendChild(m);
+  var VP = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+  function applyViewport() {
+    var head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) return;
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (meta) {
+      if (meta.getAttribute('content') !== VP) meta.setAttribute('content', VP);
+    } else {
+      var m = document.createElement('meta');
+      m.name = 'viewport';
+      m.content = VP;
+      head.appendChild(m);
+    }
   }
-  var style = document.createElement('style');
-  style.textContent = '* { -webkit-user-select: none !important; user-select: none !important; -webkit-touch-callout: none !important; }';
-  document.head.appendChild(style);
+  applyViewport();
+
+  // React/Next.js may re-render the head and replace the viewport meta —
+  // observe and re-apply so the no-zoom directive sticks.
+  if (!window._flyzViewportObserver) {
+    var headEl = document.head || document.getElementsByTagName('head')[0];
+    if (headEl) {
+      window._flyzViewportObserver = new MutationObserver(applyViewport);
+      window._flyzViewportObserver.observe(headEl,
+        { childList: true, subtree: true, attributes: true, attributeFilter: ['content'] });
+    }
+  }
+
+  // touch-action: manipulation is the canonical way to disable
+  // double-tap-to-zoom on iOS WKWebView (works in iOS 10+).
+  if (!document.getElementById('_flyz_lockdown_css')) {
+    var style = document.createElement('style');
+    style.id = '_flyz_lockdown_css';
+    style.textContent =
+      'html, body { touch-action: manipulation !important; -ms-touch-action: manipulation !important; }' +
+      '* { -webkit-user-select: none !important; user-select: none !important; -webkit-touch-callout: none !important; -webkit-tap-highlight-color: transparent !important; touch-action: manipulation !important; }' +
+      'input, textarea, [contenteditable] { -webkit-user-select: text !important; user-select: text !important; }';
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  if (window._flyzGesturesBound) return;
+  window._flyzGesturesBound = true;
+
   document.addEventListener('contextmenu', function(e) {
     e.preventDefault(); e.stopPropagation(); return false;
   }, true);
   document.addEventListener('dblclick', function(e) {
     e.preventDefault(); e.stopPropagation(); return false;
   }, true);
+  // iOS-specific pinch gesture events — block pinch-to-zoom outright.
+  document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false, capture: true });
+  document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false, capture: true });
+  document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false, capture: true });
   document.addEventListener('touchstart', function(e) {
     if (e.touches.length > 1) { e.preventDefault(); }
   }, { passive: false, capture: true });
@@ -32,7 +65,7 @@ const _kLockdownJs = r"""
   var lastTap = 0;
   document.addEventListener('touchend', function(e) {
     var now = Date.now();
-    if (now - lastTap < 300) { e.preventDefault(); }
+    if (now - lastTap < 350) { e.preventDefault(); }
     lastTap = now;
   }, { passive: false, capture: true });
 })();
@@ -132,13 +165,18 @@ class _FlyzWebScreenState extends State<FlyzWebScreen> {
             _loadProgress = p;
             if (p >= 100) _loadDone = true;
           }),
-          onPageStarted: (url) => setState(() {
-            _navUrl = url;
-            _error = null;
-            _loadDone = false;
-            _loadProgress = 0;
-            _applyStatusBarStyle(url);
-          }),
+          onPageStarted: (url) {
+            // Apply zoom lockdown as early as possible so iOS WKWebView
+            // never sees a zoomable viewport, even during initial paint.
+            _controller.runJavaScript(_kLockdownJs);
+            setState(() {
+              _navUrl = url;
+              _error = null;
+              _loadDone = false;
+              _loadProgress = 0;
+              _applyStatusBarStyle(url);
+            });
+          },
           onPageFinished: (url) {
             _controller.runJavaScript(_kLockdownJs);
             // Error crash detection only needed on home — not on auth pages
