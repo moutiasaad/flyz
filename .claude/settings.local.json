@@ -10,7 +10,12 @@
       "Bash(cat:*)",
       "Bash(flutter analyze:*)",
       "Bash(flutter run:*)",
-      "Bash(dart run:*)"
+      "Bash(dart run:*)",
+      "Bash(C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat pub *)",
+      "PowerShell(& \"C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat\" pub get)",
+      "PowerShell(& \"C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat\" analyze lib/web_screen.dart)",
+      "PowerShell(& \"C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat\" analyze lib/services/fcm_service.dart lib/web_screen.dart lib/main.dart)",
+      "PowerShell(& \"C:\\\\src\\\\flutter\\\\bin\\\\flutter.bat\" build apk --debug)"
     ],
     "deny": [],
     "ask": []

@@ -4,10 +4,20 @@ import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
+/// Default [FirebaseOptions] for use with your Firebase apps.
+///
+/// Example:
+/// ```dart
+/// import 'firebase_options.dart';
+/// // ...
+/// await Firebase.initializeApp(
+///   options: DefaultFirebaseOptions.currentPlatform,
+/// );
+/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError('Web platform not configured.');
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -16,36 +26,61 @@ class DefaultFirebaseOptions {
         return ios;
       case TargetPlatform.macOS:
         return macos;
+      case TargetPlatform.windows:
+        return windows;
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       default:
         throw UnsupportedError(
-          'DefaultFirebaseOptions not configured for this platform.',
+          'DefaultFirebaseOptions are not supported for this platform.',
         );
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBAWt1IY9IrfMfkhxSZ2bF4UM6rvl_luWE',
+    appId: '1:315447478704:web:03c84a66e1b1ceaa59ae75',
+    messagingSenderId: '315447478704',
+    projectId: 'flyz-58f1b',
+    authDomain: 'flyz-58f1b.firebaseapp.com',
+    storageBucket: 'flyz-58f1b.firebasestorage.app',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBeCgeEAwGug4UdhVwfowKrFuQAsv59upI',
-    appId: '1:315447478704:android:848ba597f2546a3a59ae75',
+    appId: '1:315447478704:android:f90af8e088e3f35b59ae75',
     messagingSenderId: '315447478704',
     projectId: 'flyz-58f1b',
     storageBucket: 'flyz-58f1b.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBeCgeEAwGug4UdhVwfowKrFuQAsv59upI',
-    appId: '1:315447478704:ios:848ba597f2546a3a59ae75',
+    apiKey: 'AIzaSyADSRpuLvuv-p82PMfivjCDrelq_l4c6p0',
+    appId: '1:315447478704:ios:efcd5b8860d980bc59ae75',
     messagingSenderId: '315447478704',
     projectId: 'flyz-58f1b',
     storageBucket: 'flyz-58f1b.firebasestorage.app',
-    iosBundleId: 'com.example.flyz',
+    iosBundleId: 'com.flyz.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBeCgeEAwGug4UdhVwfowKrFuQAsv59upI',
-    appId: '1:315447478704:ios:848ba597f2546a3a59ae75',
+    apiKey: 'AIzaSyADSRpuLvuv-p82PMfivjCDrelq_l4c6p0',
+    appId: '1:315447478704:ios:adf1e798237ff5fa59ae75',
     messagingSenderId: '315447478704',
     projectId: 'flyz-58f1b',
     storageBucket: 'flyz-58f1b.firebasestorage.app',
-    iosBundleId: 'com.example.flyz',
+    iosBundleId: 'com.flyz',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBAWt1IY9IrfMfkhxSZ2bF4UM6rvl_luWE',
+    appId: '1:315447478704:web:a571caa7990a81b959ae75',
+    messagingSenderId: '315447478704',
+    projectId: 'flyz-58f1b',
+    authDomain: 'flyz-58f1b.firebaseapp.com',
+    storageBucket: 'flyz-58f1b.firebasestorage.app',
   );
 }

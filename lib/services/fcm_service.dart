@@ -34,6 +34,7 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
         priority: Priority.high,
         icon: '@mipmap/ic_launcher',
       ),
+      iOS: const DarwinNotificationDetails(),
     ),
   );
 }
@@ -60,7 +61,11 @@ class FcmService {
     await _plugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-        iOS: DarwinInitializationSettings(),
+        iOS: DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        ),
       ),
     );
 
@@ -78,6 +83,16 @@ class FcmService {
     print('[FCM] permission: ${settings.authorizationStatus}');
 
     if (settings.authorizationStatus == AuthorizationStatus.denied) return;
+
+    // iOS only — make FCM-delivered notifications visible while the app is
+    // foregrounded. Without this they're silently dropped on iOS.
+    if (Platform.isIOS) {
+      await messaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    }
 
     // Foreground: FCM delivers silently — show via local notification instead
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -102,6 +117,19 @@ class FcmService {
         ),
       );
     });
+
+    // iOS: getToken() returns null until APNs has handed us a token. Wait
+    // for it (with a short retry loop) before asking FCM for its token.
+    if (Platform.isIOS) {
+      String? apns;
+      for (var attempt = 0; attempt < 10; attempt++) {
+        apns = await messaging.getAPNSToken();
+        if (apns != null) break;
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+      // ignore: avoid_print
+      print('[FCM] APNs token: ${apns ?? "(none — push will not work)"}');
+    }
 
     final token = await messaging.getToken();
     // ignore: avoid_print

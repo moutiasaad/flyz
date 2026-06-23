@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 const _kLockdownJs = r"""
@@ -230,8 +231,12 @@ class _FlyzWebScreenState extends State<FlyzWebScreen> {
             }
           },
           onNavigationRequest: (req) {
+            final url = req.url;
+            if (_shouldOpenExternally(url)) {
+              _openExternal(url);
+              return NavigationDecision.prevent;
+            }
             if (widget.detectAuth) {
-              final url = req.url;
               if (_isHomeUrl(url) && url != widget.initialUrl) {
                 widget.onDone();
                 return NavigationDecision.prevent;
@@ -266,6 +271,41 @@ class _FlyzWebScreenState extends State<FlyzWebScreen> {
         url == h || url.startsWith('$h?') || url.startsWith('$h#'));
     _statusBarBg = isHome ? _blue : Colors.white;
     _iconBrightness = isHome ? Brightness.light : Brightness.dark;
+  }
+
+  // Schemes/hosts that should hand off to the OS instead of the WebView,
+  // so taps on the help-page cards open Mail / dialer / WhatsApp natively.
+  bool _shouldOpenExternally(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    final scheme = uri.scheme.toLowerCase();
+    if (scheme == 'mailto' ||
+        scheme == 'tel' ||
+        scheme == 'sms' ||
+        scheme == 'whatsapp') {
+      return true;
+    }
+    if (scheme == 'https' || scheme == 'http') {
+      final host = uri.host.toLowerCase();
+      if (host == 'wa.me' ||
+          host == 'api.whatsapp.com' ||
+          host == 'chat.whatsapp.com') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> _openExternal(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      // Swallow — no handler installed for this scheme. Tapping the card
+      // simply does nothing, which is preferable to crashing or showing an
+      // error inside the WebView.
+    }
   }
 
   bool _isHomeUrl(String url) {
