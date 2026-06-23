@@ -31,20 +31,38 @@ const _kLockdownJs = r"""
     }
   }
 
-  // touch-action: manipulation is the canonical way to disable
-  // double-tap-to-zoom on iOS WKWebView (works in iOS 10+).
+  // touch-action: manipulation kills double-tap-to-zoom on iOS WKWebView.
+  // The 16px font-size on form fields is what blocks iOS input auto-zoom
+  // (WKWebView auto-zooms any input with font-size < 16px on focus, even
+  //  when user-scalable=no is set in the viewport).
   if (!document.getElementById('_flyz_lockdown_css')) {
     var style = document.createElement('style');
     style.id = '_flyz_lockdown_css';
     style.textContent =
-      'html, body { touch-action: manipulation !important; -ms-touch-action: manipulation !important; }' +
+      'html, body { touch-action: manipulation !important; -ms-touch-action: manipulation !important; -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }' +
       '* { -webkit-user-select: none !important; user-select: none !important; -webkit-touch-callout: none !important; -webkit-tap-highlight-color: transparent !important; touch-action: manipulation !important; }' +
-      'input, textarea, [contenteditable] { -webkit-user-select: text !important; user-select: text !important; }';
+      'input, select, textarea, [contenteditable] { font-size: 16px !important; -webkit-user-select: text !important; user-select: text !important; max-height: 999999px; }';
     (document.head || document.documentElement).appendChild(style);
   }
 
   if (window._flyzGesturesBound) return;
   window._flyzGesturesBound = true;
+
+  // iOS input auto-zoom defence: re-assert the locked viewport the instant
+  // an input/select/textarea takes focus, and force 16px font inline.
+  document.addEventListener('focusin', function(e) {
+    var el = e.target;
+    if (el && el.matches && el.matches('input, select, textarea, [contenteditable]')) {
+      applyViewport();
+      try {
+        var cs = window.getComputedStyle(el);
+        var size = parseFloat(cs.fontSize);
+        if (!isFinite(size) || size < 16) {
+          el.style.setProperty('font-size', '16px', 'important');
+        }
+      } catch(_) {}
+    }
+  }, true);
 
   document.addEventListener('contextmenu', function(e) {
     e.preventDefault(); e.stopPropagation(); return false;
